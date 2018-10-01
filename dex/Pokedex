@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<pokedex>
+    <pokemon>
+        <guesstype>Any</guesstype>
+        <id>0</id>
+        <name>Missing No</name>
+        <negated></negated>
+        <resistant>Everything</resistant>
+        <route>None</route>
+        <type>All</type>
+        <weakness>Nothing</weakness>
+    </pokemon>
+
+</pokedex>
