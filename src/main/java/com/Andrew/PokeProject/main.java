@@ -523,6 +523,7 @@ public class main extends Application{
             } else {
                 Pokemon poke = pokeLookup.get(editPoke);
                 poke.setName(newName);
+                poke.setId(IdPatcher.getId(newName));
                 poke.setRoute(route);
                 poke.setType(type);
                 poke.setGuesstype(guesstype);
