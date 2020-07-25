@@ -1,4 +1,4 @@
-package com.Andrew.PokeProject;
+package main.java;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -23,14 +23,14 @@ public class Pokemon implements Comparable<Pokemon> {
 
     }
 
-    public Pokemon(String name, String route, String type, String guesstype, String resistant, String negated, String weakness, String id) {
+    public Pokemon(String name, String route, String type, String guesstype, String weakness, String resistant, String negated, String id) {
         this.name = name;
         this.route = route;
         this.type = type;
         this.guesstype = guesstype;
+        this.weakness = weakness;
         this.resistant = resistant;
         this.negated = negated;
-        this.weakness = weakness;
         this.id = id;
     }
 
@@ -73,6 +73,14 @@ public class Pokemon implements Comparable<Pokemon> {
     public String getGuesstype() {
         return guesstype;
     }
+    @XmlElement(name="weakness")
+    public void setWeakness(String weakness) {
+        this.weakness = weakness;
+    }
+
+    public String getWeakness() {
+        return weakness;
+    }
 
     @XmlElement(name="resistant")
     public void setResistant(String resistant) {
@@ -92,14 +100,6 @@ public class Pokemon implements Comparable<Pokemon> {
         return negated;
     }
 
-    @XmlElement(name="weakness")
-    public void setWeakness(String weakness) {
-        this.weakness = weakness;
-    }
-
-    public String getWeakness() {
-        return weakness;
-    }
 
     @XmlElement(name="id")
     public void setId(String id) {

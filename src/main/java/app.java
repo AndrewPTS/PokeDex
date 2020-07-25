@@ -1,4 +1,4 @@
-package com.Andrew.PokeProject; /**
+package main.java; /**
  * Created by Andrew on 6/21/2017.
  */
 import java.net.URISyntaxException;
@@ -39,8 +39,7 @@ import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
 
-
-public class main extends Application{
+public class app extends Application{
 
     private static Pokedex pokedex;
     private static HashMap<String, Pokemon> pokeLookup = new HashMap<>();
@@ -460,11 +459,11 @@ public class main extends Application{
 
     private static class actionHelper {
 
-        private static int add(String name, String route, String type, String guesstype, String resistant,
-                                String weakness, String negated) {
+        private static int add(String name, String route, String type, String guesstype, String weakness, String resistant,
+                               String negated) {
             name = capitalize(name);
             if (!isExisting(name)){
-                Pokemon newPoke = new Pokemon(name, route, type, guesstype, resistant, negated, weakness, IdPatcher.getId(name));
+                Pokemon newPoke = new Pokemon(name, route, type, guesstype, weakness, resistant, negated, IdPatcher.getId(name));
                 pokedex.addPoke(newPoke);
                 pokeLookup.put(name, newPoke);
                 pokedex.exportPokemon();
@@ -905,138 +904,138 @@ public class main extends Application{
     /**
 
 
-    public static void routelist(String route) {
+     public static void routelist(String route) {
 
-        for (Pokemon poke:pokedex.getPokemon()) {
-            String[] listOfRoutes = poke.getRoute().split(",");
-            for (int i = 0; i < listOfRoutes.length; i++) {
-                if (i == 0) {
-                    if (listOfRoutes[i].equals(route)) {
-                        System.out.println(poke);
-                    }
-                } else {
-                    if (listOfRoutes[i].substring(1).equals(route)) {
-                        System.out.println(poke);
-                    }
-                }
-            }
-
-
-        }
-
-    }
-
-    public static void list() {
-        for (Pokemon poke:pokedex.getPokemon()) {
-            System.out.println(poke);
-        }
-    }
-
-    public static void append() {
-        System.out.println("Enter the name of the Pokemon you would like to edit:\t");
-        String editPoke = input.nextLine();
-        editPoke = capitalize(editPoke);
-        int chosenPoke = 0;
-        for (int i = 0; i < pokedex.getPokemon().size(); i++) {
-            if (pokedex.getPokemon().get(i).getName().equals(editPoke)) {
-                chosenPoke = i;
-                i+=10000;
-            } else if (i == pokedex.getPokemon().size()-1) {
-                chosenPoke = 10000;
-            }
-        }
-        if (chosenPoke == 10000 && chosenPoke != 0) {
-            System.out.println("That Pokemon is not in the Pokedex!");
-        } else {
-            appendSpecific(chosenPoke);
-        }
-    }
+     for (Pokemon poke:pokedex.getPokemon()) {
+     String[] listOfRoutes = poke.getRoute().split(",");
+     for (int i = 0; i < listOfRoutes.length; i++) {
+     if (i == 0) {
+     if (listOfRoutes[i].equals(route)) {
+     System.out.println(poke);
+     }
+     } else {
+     if (listOfRoutes[i].substring(1).equals(route)) {
+     System.out.println(poke);
+     }
+     }
+     }
 
 
-    public static void editSpecific(int chosenPoke) {
-        System.out.println("What would you like to edit:\nname\troute\ttype\tguesstype\tresistant\tnegated\tweakness\tback");
-        String decision = input.nextLine();
-        System.out.println("Please type the new value");
-        String value = input.nextLine();
-        if (decision.equals("name")) {
-            pokedex.getPokemon().get(chosenPoke).setName(value);
-            pokedex.exportPokemon();
-        } else if (decision.equals("route")) {
-            pokedex.getPokemon().get(chosenPoke).setRoute(value);
-            pokedex.exportPokemon();
-        } else if (decision.equals("type")) {
-            pokedex.getPokemon().get(chosenPoke).setType(value);
-            pokedex.exportPokemon();
-        } else if (decision.equals("guesstype")) {
-            pokedex.getPokemon().get(chosenPoke).setGuesstype(value);
-            pokedex.exportPokemon();
-        } else if (decision.equals("resistant")) {
-            pokedex.getPokemon().get(chosenPoke).setResistant(value);
-            pokedex.exportPokemon();
-        } else if (decision.equals("negated")) {
-            pokedex.getPokemon().get(chosenPoke).setNegated(value);
-            pokedex.exportPokemon();
-        } else if (decision.equals("weakness")) {
-            pokedex.getPokemon().get(chosenPoke).setWeakness(value);
-            pokedex.exportPokemon();
-        } else if (decision.equals("back")) {
-            edit();
-        } else {
-            editSpecific(chosenPoke);
-        }
-    }
+     }
+
+     }
+
+     public static void list() {
+     for (Pokemon poke:pokedex.getPokemon()) {
+     System.out.println(poke);
+     }
+     }
+
+     public static void append() {
+     System.out.println("Enter the name of the Pokemon you would like to edit:\t");
+     String editPoke = input.nextLine();
+     editPoke = capitalize(editPoke);
+     int chosenPoke = 0;
+     for (int i = 0; i < pokedex.getPokemon().size(); i++) {
+     if (pokedex.getPokemon().get(i).getName().equals(editPoke)) {
+     chosenPoke = i;
+     i+=10000;
+     } else if (i == pokedex.getPokemon().size()-1) {
+     chosenPoke = 10000;
+     }
+     }
+     if (chosenPoke == 10000 && chosenPoke != 0) {
+     System.out.println("That Pokemon is not in the Pokedex!");
+     } else {
+     appendSpecific(chosenPoke);
+     }
+     }
 
 
-    public static void appendSpecific(int chosenPoke) {
-        System.out.println("What would you like to edit:\troute\ttype\tguesstype\tresistant\tnegated\tweakness\tback");
-        String decision = input.nextLine();
-        System.out.println("Please type the value you would like to append");
-        String value = input.nextLine();
-        if (decision.equals("route")) {
-            pokedex.getPokemon().get(chosenPoke).setRoute(pokedex.getPokemon().get(chosenPoke).getRoute()+", " + value);
-            pokedex.exportPokemon();
-        } else if (decision.equals("type")) {
-            pokedex.getPokemon().get(chosenPoke).setType(pokedex.getPokemon().get(chosenPoke).getType()+", " + value);
-            pokedex.exportPokemon();
-        } else if (decision.equals("guesstype")) {
-            pokedex.getPokemon().get(chosenPoke).setGuesstype(pokedex.getPokemon().get(chosenPoke).getGuesstype()+", " + value);
-            pokedex.exportPokemon();
-        } else if (decision.equals("resistant")) {
-            pokedex.getPokemon().get(chosenPoke).setResistant(pokedex.getPokemon().get(chosenPoke).getResistant()+", " + value);
-            pokedex.exportPokemon();
-        } else if (decision.equals("negated")) {
-            pokedex.getPokemon().get(chosenPoke).setNegated(pokedex.getPokemon().get(chosenPoke).getNegated()+", "+value);
-            pokedex.exportPokemon();
-        } else if (decision.equals("weakness")) {
-            pokedex.getPokemon().get(chosenPoke).setWeakness(pokedex.getPokemon().get(chosenPoke).getWeakness()+", "+value);
-            pokedex.exportPokemon();
-        } else if (decision.equals("back")) {
-            edit();
-        } else {
-            appendSpecific(chosenPoke);
-        }
-    }
+     public static void editSpecific(int chosenPoke) {
+     System.out.println("What would you like to edit:\nname\troute\ttype\tguesstype\tresistant\tnegated\tweakness\tback");
+     String decision = input.nextLine();
+     System.out.println("Please type the new value");
+     String value = input.nextLine();
+     if (decision.equals("name")) {
+     pokedex.getPokemon().get(chosenPoke).setName(value);
+     pokedex.exportPokemon();
+     } else if (decision.equals("route")) {
+     pokedex.getPokemon().get(chosenPoke).setRoute(value);
+     pokedex.exportPokemon();
+     } else if (decision.equals("type")) {
+     pokedex.getPokemon().get(chosenPoke).setType(value);
+     pokedex.exportPokemon();
+     } else if (decision.equals("guesstype")) {
+     pokedex.getPokemon().get(chosenPoke).setGuesstype(value);
+     pokedex.exportPokemon();
+     } else if (decision.equals("resistant")) {
+     pokedex.getPokemon().get(chosenPoke).setResistant(value);
+     pokedex.exportPokemon();
+     } else if (decision.equals("negated")) {
+     pokedex.getPokemon().get(chosenPoke).setNegated(value);
+     pokedex.exportPokemon();
+     } else if (decision.equals("weakness")) {
+     pokedex.getPokemon().get(chosenPoke).setWeakness(value);
+     pokedex.exportPokemon();
+     } else if (decision.equals("back")) {
+     edit();
+     } else {
+     editSpecific(chosenPoke);
+     }
+     }
 
-    public static void view() {
-        System.out.println("Enter the name of the Pokemon you would like to view:\t");
-        String viewPoke = input.nextLine();
-        viewPoke = capitalize(viewPoke);
-        int chosenPoke = 0;
-        for (int i = 0; i < pokedex.getPokemon().size(); i++) {
-            if (pokedex.getPokemon().get(i).getName().equals(viewPoke)) {
-                chosenPoke = i;
-                i+=10000;
-            } else if (i == pokedex.getPokemon().size()-1) {
-                chosenPoke = 10000;
-            }
-        }
-        if (chosenPoke == 10000) {
-            System.out.println("That Pokemon is not in the Pokedex!");
-        } else {
-            System.out.println(pokedex.getPokemon().get(chosenPoke).toString());
-        }
 
-    }
+     public static void appendSpecific(int chosenPoke) {
+     System.out.println("What would you like to edit:\troute\ttype\tguesstype\tresistant\tnegated\tweakness\tback");
+     String decision = input.nextLine();
+     System.out.println("Please type the value you would like to append");
+     String value = input.nextLine();
+     if (decision.equals("route")) {
+     pokedex.getPokemon().get(chosenPoke).setRoute(pokedex.getPokemon().get(chosenPoke).getRoute()+", " + value);
+     pokedex.exportPokemon();
+     } else if (decision.equals("type")) {
+     pokedex.getPokemon().get(chosenPoke).setType(pokedex.getPokemon().get(chosenPoke).getType()+", " + value);
+     pokedex.exportPokemon();
+     } else if (decision.equals("guesstype")) {
+     pokedex.getPokemon().get(chosenPoke).setGuesstype(pokedex.getPokemon().get(chosenPoke).getGuesstype()+", " + value);
+     pokedex.exportPokemon();
+     } else if (decision.equals("resistant")) {
+     pokedex.getPokemon().get(chosenPoke).setResistant(pokedex.getPokemon().get(chosenPoke).getResistant()+", " + value);
+     pokedex.exportPokemon();
+     } else if (decision.equals("negated")) {
+     pokedex.getPokemon().get(chosenPoke).setNegated(pokedex.getPokemon().get(chosenPoke).getNegated()+", "+value);
+     pokedex.exportPokemon();
+     } else if (decision.equals("weakness")) {
+     pokedex.getPokemon().get(chosenPoke).setWeakness(pokedex.getPokemon().get(chosenPoke).getWeakness()+", "+value);
+     pokedex.exportPokemon();
+     } else if (decision.equals("back")) {
+     edit();
+     } else {
+     appendSpecific(chosenPoke);
+     }
+     }
+
+     public static void view() {
+     System.out.println("Enter the name of the Pokemon you would like to view:\t");
+     String viewPoke = input.nextLine();
+     viewPoke = capitalize(viewPoke);
+     int chosenPoke = 0;
+     for (int i = 0; i < pokedex.getPokemon().size(); i++) {
+     if (pokedex.getPokemon().get(i).getName().equals(viewPoke)) {
+     chosenPoke = i;
+     i+=10000;
+     } else if (i == pokedex.getPokemon().size()-1) {
+     chosenPoke = 10000;
+     }
+     }
+     if (chosenPoke == 10000) {
+     System.out.println("That Pokemon is not in the Pokedex!");
+     } else {
+     System.out.println(pokedex.getPokemon().get(chosenPoke).toString());
+     }
+
+     }
      */
 
 

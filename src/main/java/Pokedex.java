@@ -1,4 +1,4 @@
-package com.Andrew.PokeProject; /**
+package main.java; /**
  * Created by Andrew on 8/2/2018.
  */
 
