@@ -150,7 +150,7 @@ public class app extends Application{
                 }
             });
         });
-        filteredList2.setPredicate(selectedRoute -> !selectedRoute.equals("None"));
+        filteredList2.setPredicate(selectedRoute -> !(selectedRoute.equals("None") || selectedRoute.equals("")));
         routeComboBox.setItems(filteredList2);
 
 
@@ -499,7 +499,7 @@ public class app extends Application{
                     routeList.remove(route);
                 }
             }
-            filteredList2 = new FilteredList<>(routeList, selectedRoute -> !selectedRoute.equals("None"));
+            filteredList2 = new FilteredList<>(routeList, selectedRoute -> !(selectedRoute.equals("None") || selectedRoute.equals("")));
             routeComboBox.setItems(filteredList2);
         }
 
