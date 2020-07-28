@@ -22,7 +22,6 @@ public class Pokedex {
 
     @XmlElement(name="pokemon", type= Pokemon.class)
     private ArrayList<Pokemon> pokemon = new ArrayList<>();
-    private ArrayList<String> routes = new ArrayList<>();
 
     public Pokedex() {
 
@@ -44,33 +43,12 @@ public class Pokedex {
         return names;
     }
 
-    public ArrayList<String> getRoutes() {
-        routes.clear();
-        for (Pokemon poke:pokemon) {
-            List<String> pokeRoutes = Arrays.asList(poke.getRoute().split(",[ ]*"));
-            for (String route:pokeRoutes) {
-                if (route.equals("Za") || route.equals("za")) {
-                    System.out.println(poke);
-                }
-                if (!routes.contains(route) && !route.equals("")) {
-                    routes.add(route);
-                }
-            }
-        }
-        java.util.Collections.sort(routes);
-        return routes;
-    }
-
     public void addPoke(Pokemon newPoke) {
         pokemon.add(newPoke);
     }
 
     public void removePoke(Pokemon poke) {
         pokemon.remove(poke);
-    }
-
-    public void removeRoute(String route) {
-        routes.remove(route);
     }
 
     public void exportPokemon() {

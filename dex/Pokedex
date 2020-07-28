@@ -10,5 +10,24 @@
         <type>All</type>
         <weakness>Nothing</weakness>
     </pokemon>
-
+    <pokemon>
+        <guesstype></guesstype>
+        <id>381</id>
+        <name>Latios</name>
+        <negated></negated>
+        <resistant></resistant>
+        <route>Virbank Complex</route>
+        <type></type>
+        <weakness></weakness>
+    </pokemon>
+    <pokemon>
+        <guesstype></guesstype>
+        <id>380</id>
+        <name>Latias</name>
+        <negated></negated>
+        <resistant></resistant>
+        <route>Virbank City</route>
+        <type></type>
+        <weakness></weakness>
+    </pokemon>
 </pokedex>
