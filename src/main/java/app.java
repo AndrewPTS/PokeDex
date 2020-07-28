@@ -711,6 +711,8 @@ public class app extends Application{
                     } else if (pokeLookup.containsKey(poke)) {
                         actionHelper.addToRoute(route, poke);
                         prompt.close();
+                        pokeTemp = poke;
+                        pokeComboBox.getSelectionModel().select(poke);
                         setRouteText(route);
                     } else {
                         prompt.close();
@@ -727,6 +729,7 @@ public class app extends Application{
                             addingToRoute = true;
                             tabPane.getSelectionModel().select(0);
                             addPokeBttn.fire();
+                            pokeTemp = poke;
                             pokeComboBox.getSelectionModel().select(poke);
                         });
                         Button n = new Button("No");
