@@ -371,6 +371,10 @@ public class app extends Application{
                     routeLookup.get(pokeRoutes[i]).remove(pokeLookup.get(pokeComboBox.getSelectionModel().getSelectedItem()).getName());
                 }
                 actionHelper.removeUnusedRoutes();
+                if (!routeList.contains(routeTemp)) {
+                    routeTemp = "";
+                    routeComboBox.getSelectionModel().clearSelection();
+                }
                 pokedex.removePoke(pokeLookup.get(pokeComboBox.getSelectionModel().getSelectedItem()));
                 pokeLookup.remove(pokeComboBox.getSelectionModel().getSelectedItem());
                 pokedex.exportPokemon();
@@ -418,13 +422,13 @@ public class app extends Application{
             public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
                 if (newValue.equals(1)) {
                     if (routeComboBox.getSelectionModel().getSelectedItem() != null) {
-                        setRouteText(routeComboBox.getSelectionModel().getSelectedItem());
+                        setRouteText(routeTemp);
                     }
                     routeWindow.setVisible(true);
                     pokeWindow.setVisible(false);
                 } else {
                     if (pokeComboBox.getSelectionModel().getSelectedItem() != null) {
-                        setPokeText(pokeComboBox.getSelectionModel().getSelectedItem());
+                        setPokeText(pokeTemp);
                     }
                     routeWindow.setVisible(false);
                     pokeWindow.setVisible(true);
@@ -492,7 +496,7 @@ public class app extends Application{
                 Collections.sort(filteredList2.getSource());
                 pokedex.exportPokemon();
                 pokeTemp = nameField.getText();
-                System.out.println(pokeTemp);
+                setRouteText(routeTemp);
                 return 0;
             } else {
                 return 1;
@@ -594,7 +598,6 @@ public class app extends Application{
     }
 
     private void setPokeText(String poke) {
-        System.out.println(poke);
         img.setFitHeight(scene.getWidth() * DEFAULT_IMAGE_SCALE);
         img.setFitWidth(scene.getWidth() * DEFAULT_IMAGE_SCALE);
         img.setX(scene.getWidth()-img.getFitWidth());
@@ -688,7 +691,7 @@ public class app extends Application{
         routeTextArea.getChildren().remove(0, routeTextArea.getChildren().size());
         routeTitleArea.getChildren().remove(0, routeTitleArea.getChildren().size());
         final String route = capitalizeWord(rout);
-        if (!route.equals("None")) {
+        if (!(route.equals("None") || route.replaceAll("\\s+", "").equals(""))) {
             routeTitleText.setFont(Font.font("Serif", FontWeight.EXTRA_BOLD, DEFAULT_TITLE_SIZE));
             routeTitleText.setText(route);
             Button addToRouteBttn = new Button("Add a Pokemon to this route");
@@ -702,6 +705,7 @@ public class app extends Application{
                 Button submit = new Button("Submit");
                 submit.setOnAction(e -> {
                     final String poke = capitalize(field.getText());
+                    routeTemp = route;
                     if (routeLookup.get(route).contains(poke)) {
                         prompt.close();
                     } else if (pokeLookup.containsKey(poke)) {
@@ -723,6 +727,7 @@ public class app extends Application{
                             addingToRoute = true;
                             tabPane.getSelectionModel().select(0);
                             addPokeBttn.fire();
+                            pokeComboBox.getSelectionModel().select(poke);
                         });
                         Button n = new Button("No");
                         n.setOnAction(no -> {
