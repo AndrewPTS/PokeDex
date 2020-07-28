@@ -119,7 +119,7 @@ public class app extends Application{
                     });
                 }
                 //to avoid buggy comboboxes
-                setRouteText(pokeTemp);
+                setPokeText(pokeTemp);
                 if (oldSize != filteredList.size() && selected == null) {
                     pokeComboBox.hide();
                     pokeComboBox.show();
@@ -459,7 +459,6 @@ public class app extends Application{
 
         routeComboBox.setOnAction(event -> {
 
-            System.out.print(routeComboBox.getSelectionModel().getSelectedItem());
             if (routeComboBox.getSelectionModel().getSelectedItem() != null) {
                 routeTemp = routeComboBox.getSelectionModel().getSelectedItem();
             }
@@ -549,6 +548,7 @@ public class app extends Application{
                 removeUnusedRoutes();
                 Collections.sort(filteredList2.getSource());
                 if (!routeList.contains(routeTemp)) {
+                    routeTemp = "";
                     routeComboBox.getSelectionModel().clearSelection();
                 }
             }
