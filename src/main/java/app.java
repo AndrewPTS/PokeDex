@@ -150,7 +150,9 @@ public class app extends Application{
                 }
             });
         });
-        filteredList2.setPredicate(selectedRoute -> !(selectedRoute.equals("None") || selectedRoute.equals("")));
+        Collections.sort(routeList);
+        filteredList2 = new FilteredList<>(routeList, selectedRoute -> !(selectedRoute.equals("None")
+                || selectedRoute.replaceAll("\\s+", "").equals("")));
         routeComboBox.setItems(filteredList2);
 
 
@@ -221,7 +223,7 @@ public class app extends Application{
                     for (int i = 0; i < pokeRoutes.length; i++) {
                         if (!routeList.contains(pokeRoutes[i]) && !pokeRoutes[i].equals("")) {
                             routeList.add(routeField.getText());
-                            Collections.sort(routeList);
+                            Collections.sort(filteredList2.getSource());
                         }
                     }
                     addPokeWindow.close();
@@ -319,7 +321,7 @@ public class app extends Application{
                     for (int i = 0; i < pokeRoutes.length; i++) {
                         if (!routeList.contains(pokeRoutes[i]) && !pokeRoutes[i].equals("")) {
                             routeList.add(routeField.getText());
-                            Collections.sort(routeList);
+                            Collections.sort(filteredList2);
                         }
                     }
                     addPokeWindow.close();
@@ -499,7 +501,9 @@ public class app extends Application{
                     routeList.remove(route);
                 }
             }
-            filteredList2 = new FilteredList<>(routeList, selectedRoute -> !(selectedRoute.equals("None") || selectedRoute.equals("")));
+            Collections.sort(routeList);
+            filteredList2 = new FilteredList<>(routeList, selectedRoute -> !(selectedRoute.equals("None")
+                    || selectedRoute.replaceAll("\\s+", "").equals("")));
             routeComboBox.setItems(filteredList2);
         }
 
