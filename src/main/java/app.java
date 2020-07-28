@@ -233,13 +233,6 @@ public class app extends Application{
                         System.out.println("clear");
                         nameField.setText(capitalize(nameField.getText()));
                         routeField.setText(capitalizeWord(routeField.getText()));
-                        String[] pokeRoutes = routeField.getText().split(", ");
-                        for (int i = 0; i < pokeRoutes.length; i++) {
-                            if (!routeList.contains(pokeRoutes[i]) && !pokeRoutes[i].equals("")) {
-                                routeList.add(routeField.getText());
-                            }
-                        }
-                        Collections.sort(filteredList2.getSource());
                         if (actionHelper.add(nameField.getText(), routeField.getText(), typeField.getText(), guessTypeField.getText(),
                                 weakField.getText(), resistField.getText(), immuneField.getText()) == 0) {
 
@@ -502,21 +495,26 @@ public class app extends Application{
                 Pokemon newPoke = new Pokemon(name, route, type, guesstype, weakness, resistant, negated, IdPatcher.getId(name));
                 pokedex.addPoke(newPoke);
                 pokeLookup.put(name, newPoke);
-                String[] pokeRoutes = newPoke.getRoute().split(", ");
-                for (int i = 0; i < pokeRoutes.length; i++) {
-                    if (!routeLookup.containsKey(pokeRoutes[i])) {
-                        routeLookup.put(pokeRoutes[i], new ArrayList<>());
-                    }
-                    if (!routeLookup.get(pokeRoutes[i]).contains(newPoke.getName())) {
-                        routeLookup.get(pokeRoutes[i]).add(newPoke.getName());
-                    }
-                }
+
                 Platform.runLater(() -> {
+                    String[] pokeRoutes = routeField.getText().split(", ");
+                    for (int i = 0; i < pokeRoutes.length; i++) {
+                        if (!routeList.contains(pokeRoutes[i]) && !pokeRoutes[i].equals("")) {
+                            routeList.add(routeField.getText());
+                        }
+                    }
+                    for (int i = 0; i < pokeRoutes.length; i++) {
+                        if (!routeLookup.containsKey(pokeRoutes[i])) {
+                            routeLookup.put(pokeRoutes[i], new ArrayList<>());
+                        }
+                        if (!routeLookup.get(pokeRoutes[i]).contains(newPoke.getName())) {
+                            routeLookup.get(pokeRoutes[i]).add(newPoke.getName());
+                        }
+                    }
                     Collections.sort(filteredList2.getSource());
                     pokedex.exportPokemon();
                     pokeTemp = nameField.getText();
                     setRouteText(routeTemp);
-                    System.out.println("where am I?");
                 });
                 return 0;
             } else {
