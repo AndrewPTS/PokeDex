@@ -143,7 +143,7 @@ public class app extends Application{
             Platform.runLater(() -> {
                 if (selected == null || !selected.equals(editor.getText())) {
                     filteredList2.setPredicate(selectedRoute -> {
-                        if (selectedRoute.equals("None")) {
+                        if (selectedRoute.equals("None") || selectedRoute.replace("[\\s]+", "").equals("")) {
                             return false;
                         } else {
                             return selectedRoute.toUpperCase().startsWith(newValue.toUpperCase());
@@ -160,7 +160,13 @@ public class app extends Application{
             });
         });
         Collections.sort(routeList);
-        filteredList2 = new FilteredList<>(routeList, selectedRoute -> !(selectedRoute.equals("None")));
+        filteredList2 = new FilteredList<>(routeList, selectedRoute -> {
+            if (selectedRoute.equals("None") || selectedRoute.replace("[\\s]+", "").equals("")) {
+                return false;
+            } else {
+                return true;
+            }
+        });
         routeComboBox.setItems(filteredList2);
 
 
@@ -452,6 +458,8 @@ public class app extends Application{
         });
 
         routeComboBox.setOnAction(event -> {
+
+            System.out.print(routeComboBox.getSelectionModel().getSelectedItem());
             if (routeComboBox.getSelectionModel().getSelectedItem() != null) {
                 routeTemp = routeComboBox.getSelectionModel().getSelectedItem();
             }
