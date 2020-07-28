@@ -119,6 +119,7 @@ public class app extends Application{
                     });
                 }
                 //to avoid buggy comboboxes
+                displayImage(scene, pokeTemp);
                 setPokeText(pokeTemp);
                 if (oldSize != filteredList.size() && selected == null) {
                     pokeComboBox.hide();
@@ -491,6 +492,7 @@ public class app extends Application{
                 Collections.sort(filteredList2.getSource());
                 pokedex.exportPokemon();
                 pokeTemp = nameField.getText();
+                System.out.println(pokeTemp);
                 return 0;
             } else {
                 return 1;
@@ -592,6 +594,7 @@ public class app extends Application{
     }
 
     private void setPokeText(String poke) {
+        System.out.println(poke);
         img.setFitHeight(scene.getWidth() * DEFAULT_IMAGE_SCALE);
         img.setFitWidth(scene.getWidth() * DEFAULT_IMAGE_SCALE);
         img.setX(scene.getWidth()-img.getFitWidth());
