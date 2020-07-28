@@ -43,6 +43,8 @@ public class app extends Application{
 
     private static Pokedex pokedex;
     private ActionHelper actionHelper = new ActionHelper();
+    String pokeTemp = "";
+    String routeTemp = "";
     private static HashMap<String, Pokemon> pokeLookup = new HashMap<>();
     private static HashMap<String, ArrayList<String>> routeLookup = new HashMap<>();
     private Scene scene;
@@ -64,6 +66,7 @@ public class app extends Application{
     private FilteredList<String> filteredList;
     private ComboBox<String> routeComboBox;
     private FilteredList<String> filteredList2;
+    private ObservableList<String> routeList;
     private TextField nameField = new TextField();
     private TextField routeField = new TextField();
     private double DEFAULT_IMAGE_SCALE = .4;
@@ -71,8 +74,7 @@ public class app extends Application{
     private int DEFAULT_FONT_SIZE = 20;
     private int DEFAULT_TITLE_SIZE = 48;
     private int DEFAULT_TITLE_SPACER = 30;
-
-
+    private boolean addingToRoute = false;
 
     public static void main(String[] args) {
         launch(args);
@@ -116,6 +118,8 @@ public class app extends Application{
                         }
                     });
                 }
+                //to avoid buggy comboboxes
+                setRouteText(pokeTemp);
                 if (oldSize != filteredList.size() && selected == null) {
                     pokeComboBox.hide();
                     pokeComboBox.show();
@@ -127,7 +131,7 @@ public class app extends Application{
 
         routeComboBox = new ComboBox<>();
         ArrayList<String> rList = new ArrayList<>(routeLookup.keySet());
-        ObservableList<String> routeList = FXCollections.observableList(rList);
+        routeList = FXCollections.observableList(rList);
         filteredList2 = new FilteredList<>(routeList, p -> true);
         routeComboBox.setPromptText("Route");
         routeComboBox.setEditable(true);
@@ -138,11 +142,16 @@ public class app extends Application{
 
             Platform.runLater(() -> {
                 if (selected == null || !selected.equals(editor.getText())) {
-                    filteredList2.setPredicate(selectedRoute -> selectedRoute.toUpperCase().contains(newValue.toUpperCase()));
+                    filteredList2.setPredicate(selectedRoute -> {
+                        if (selectedRoute.equals("None")) {
+                            return false;
+                        } else {
+                            return selectedRoute.toUpperCase().startsWith(newValue.toUpperCase());
+                        }
+                    });
                 }
-                if (filteredList2.contains("None")) {
-                    filteredList2.getSource().remove("None");
-                }
+                //to avoid buggy comboboxes
+                setRouteText(routeTemp);
 
                 if (oldSize != filteredList2.size() && selected == null) {
                     routeComboBox.hide();
@@ -151,8 +160,7 @@ public class app extends Application{
             });
         });
         Collections.sort(routeList);
-        filteredList2 = new FilteredList<>(routeList, selectedRoute -> !(selectedRoute.equals("None")
-                || selectedRoute.replaceAll("\\s+", "").equals("")));
+        filteredList2 = new FilteredList<>(routeList, selectedRoute -> !(selectedRoute.equals("None")));
         routeComboBox.setItems(filteredList2);
 
 
@@ -187,12 +195,13 @@ public class app extends Application{
         addPokeBttn.setOnAction(action -> {
             Stage addPokeWindow = new Stage();
             VBox form = new VBox(28);
-            if (tabPane.getSelectionModel().getSelectedIndex() == 0) {
+            if (!addingToRoute) {
                 nameField.setText("");
                 routeField.setText("");
                 nameField.setPromptText("Name");
                 routeField.setPromptText("Route");
             }
+            addingToRoute = false;
             TextField typeField = new TextField();
             typeField.setPromptText("Type");
             TextField guessTypeField = new TextField();
@@ -213,30 +222,21 @@ public class app extends Application{
 
                 nameField.setText(capitalize(nameField.getText()));
                 routeField.setText(capitalizeWord(routeField.getText()));
+                String[] pokeRoutes = routeField.getText().split(", ");
+                for (int i = 0; i < pokeRoutes.length; i++) {
+                    if (!routeList.contains(pokeRoutes[i]) && !pokeRoutes[i].equals("")) {
+                        routeList.add(routeField.getText());
+                    }
+                }
+                Collections.sort(filteredList2.getSource());
                 if (actionHelper.add(nameField.getText(), routeField.getText(), typeField.getText(), guessTypeField.getText(),
                         weakField.getText(), resistField.getText(), immuneField.getText()) == 0) {
 
-
                     pokeList.add(nameField.getText());
                     Collections.sort(filteredList.getSource());
-                    String[] pokeRoutes = routeField.getText().split(", ");
-                    for (int i = 0; i < pokeRoutes.length; i++) {
-                        if (!routeList.contains(pokeRoutes[i]) && !pokeRoutes[i].equals("")) {
-                            routeList.add(routeField.getText());
-                            Collections.sort(filteredList2.getSource());
-                        }
-                    }
                     addPokeWindow.close();
                     tabPane.getSelectionModel().select(pokeTab);
-                    Platform.runLater(() -> {
-                        try {
-                            Thread.sleep(500);
-                            pokeComboBox.getSelectionModel().select(nameField.getText());
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    });
-
+                    pokeComboBox.getSelectionModel().select(nameField.getText());
 
                 } else {
                     error.setVisible(true);
@@ -265,87 +265,87 @@ public class app extends Application{
         editMon.setOnAction(action -> {
 
             pokeComboBox.getSelectionModel().select(pokeComboBox.getEditor().getText());
-            Platform.runLater(() -> {
-                Pokemon poke = pokeLookup.get(pokeComboBox.getSelectionModel().getSelectedItem());
-                Stage addPokeWindow = new Stage();
-                VBox form = new VBox(48);
-                TextField nameField = new TextField();
-                nameField.setText(poke.getName());
-                TextField routeField = new TextField();
-                if (poke.getRoute().equals("")) {
-                    routeField.setPromptText("Route");
-                } else {
-                    routeField.setText(poke.getRoute());
-                }
-                TextField typeField = new TextField();
-                if (poke.getType().equals("")) {
-                    typeField.setPromptText("Type");
-                } else {
-                    typeField.setText(poke.getType());
-                }
-                TextField guessTypeField = new TextField();
-                if (poke.getGuesstype().equals("")) {
-                    guessTypeField.setPromptText("Guessed Type");
-                } else {
-                    guessTypeField.setText(poke.getGuesstype());
-                }
-                TextField weakField = new TextField();
-                if (poke.getWeakness().equals("")) {
-                    weakField.setPromptText("Weakness");
-                } else {
-                    weakField.setText(poke.getWeakness());
-                }
-                TextField resistField = new TextField();
-                if (poke.getResistant().equals("")) {
-                    resistField.setPromptText("Resistance");
-                } else {
-                    resistField.setText(poke.getResistant());
-                }
-                TextField immuneField = new TextField();
-                if (poke.getNegated().equals("")) {
-                    immuneField.setPromptText("Immune");
-                } else {
-                    immuneField.setText(poke.getNegated());
-                }
-                Button submit = new Button("Edit");
-                submit.setOnAction(addAction -> {
-                    boolean nameChange = !poke.getName().equals(nameField.getText());
-                    String oldName = poke.getName();
+            Pokemon poke = pokeLookup.get(pokeComboBox.getSelectionModel().getSelectedItem());
+            Stage addPokeWindow = new Stage();
+            VBox form = new VBox(48);
+            TextField nameField = new TextField();
+            nameField.setText(poke.getName());
+            TextField routeField = new TextField();
+            if (poke.getRoute().equals("")) {
+                routeField.setPromptText("Route");
+            } else {
+                routeField.setText(poke.getRoute());
+            }
+            TextField typeField = new TextField();
+            if (poke.getType().equals("")) {
+                typeField.setPromptText("Type");
+            } else {
+                typeField.setText(poke.getType());
+            }
+            TextField guessTypeField = new TextField();
+            if (poke.getGuesstype().equals("")) {
+                guessTypeField.setPromptText("Guessed Type");
+            } else {
+                guessTypeField.setText(poke.getGuesstype());
+            }
+            TextField weakField = new TextField();
+            if (poke.getWeakness().equals("")) {
+                weakField.setPromptText("Weakness");
+            } else {
+                weakField.setText(poke.getWeakness());
+            }
+            TextField resistField = new TextField();
+            if (poke.getResistant().equals("")) {
+                resistField.setPromptText("Resistance");
+            } else {
+                resistField.setText(poke.getResistant());
+            }
+            TextField immuneField = new TextField();
+            if (poke.getNegated().equals("")) {
+                immuneField.setPromptText("Immune");
+            } else {
+                immuneField.setText(poke.getNegated());
+            }
+            Button submit = new Button("Edit");
+            submit.setOnAction(addAction -> {
+                boolean nameChange = !poke.getName().equals(nameField.getText());
+                String oldName = poke.getName();
 
-                    nameField.setText(capitalize(nameField.getText()));
-                    routeField.setText(capitalizeWord(routeField.getText()));
-                    actionHelper.edit(poke.getName(), nameField.getText(), routeField.getText(), typeField.getText(), guessTypeField.getText(),
-                            weakField.getText(), resistField.getText(), immuneField.getText());
-
-                    String[] pokeRoutes = routeField.getText().split(", ");
-                    for (int i = 0; i < pokeRoutes.length; i++) {
-                        if (!routeList.contains(pokeRoutes[i]) && !pokeRoutes[i].equals("")) {
-                            routeList.add(routeField.getText());
-                            Collections.sort(filteredList2);
-                        }
+                nameField.setText(capitalize(nameField.getText()));
+                routeField.setText(capitalizeWord(routeField.getText()));
+                String[] pokeRoutes = routeField.getText().split(", ");
+                for (int i = 0; i < pokeRoutes.length; i++) {
+                    if (!routeList.contains(pokeRoutes[i]) && !pokeRoutes[i].equals("")) {
+                        routeList.add(routeField.getText());
                     }
-                    addPokeWindow.close();
-                    if (nameChange) {
-                        pokeList.add(nameField.getText());
-                        pokeList.remove(oldName);
-                        Collections.sort(filteredList.getSource());
-                        tabPane.getSelectionModel().select(pokeTab);
-                        pokeComboBox.getSelectionModel().select(nameField.getText());
-                    } else {
-                        setPokeText(pokeComboBox.getSelectionModel().getSelectedItem());
-                    }
-                });
-
-                VBox centeredButton = new VBox(44);
-                centeredButton.getChildren().add(submit);
-                centeredButton.setAlignment(Pos.CENTER);
-                form.getChildren().addAll(nameField, routeField, typeField, guessTypeField, weakField, resistField, immuneField, centeredButton);
-                Scene addPokeScene = new Scene(form, 320, 540);
-                addPokeWindow.setScene(addPokeScene);
-                addPokeWindow.show();
+                }
+                String temp = routeComboBox.getSelectionModel().getSelectedItem();
+                Collections.sort(filteredList2.getSource());
+                routeComboBox.getSelectionModel().select(temp);
+                actionHelper.edit(poke.getName(), nameField.getText(), routeField.getText(), typeField.getText(), guessTypeField.getText(),
+                        weakField.getText(), resistField.getText(), immuneField.getText());
+                addPokeWindow.close();
+                if (nameChange) {
+                    pokeTemp = nameField.getText();
+                    pokeList.add(nameField.getText());
+                    pokeList.remove(oldName);
+                    Collections.sort(filteredList.getSource());
+                    tabPane.getSelectionModel().select(pokeTab);
+                    pokeComboBox.getSelectionModel().select(nameField.getText());
+                } else {
+                    setPokeText(pokeComboBox.getSelectionModel().getSelectedItem());
+                }
             });
 
+            VBox centeredButton = new VBox(44);
+            centeredButton.getChildren().add(submit);
+            centeredButton.setAlignment(Pos.CENTER);
+            form.getChildren().addAll(nameField, routeField, typeField, guessTypeField, weakField, resistField, immuneField, centeredButton);
+            Scene addPokeScene = new Scene(form, 320, 540);
+            addPokeWindow.setScene(addPokeScene);
+            addPokeWindow.show();
         });
+
         delMon.setText("Delete this Pokemon");
         delMon.setOnAction(event -> {
 
@@ -359,20 +359,18 @@ public class app extends Application{
             Button no = new Button();
             yes.setText("Yes");
             yes.setOnAction(action -> {
-
-                Platform.runLater(() -> {
-                    String[] pokeRoutes = pokeLookup.get(pokeComboBox.getSelectionModel().getSelectedItem()).getRoute().split(", ");
-                    for (int i = 0; i < pokeRoutes.length; i++) {
-                        routeLookup.get(pokeRoutes[i]).remove(pokeLookup.get(pokeComboBox.getSelectionModel().getSelectedItem()).getName());
-                    }
-                    actionHelper.updateRoutes(routeList);
-                    pokedex.removePoke(pokeLookup.get(pokeComboBox.getSelectionModel().getSelectedItem()));
-                    pokeLookup.remove(pokeComboBox.getSelectionModel().getSelectedItem());
-                    pokedex.exportPokemon();
-                    pokeList.remove(pokeComboBox.getSelectionModel().getSelectedItem());
-                    pokeComboBox.getSelectionModel().clearSelection();
-                });
+                String[] pokeRoutes = pokeLookup.get(pokeComboBox.getSelectionModel().getSelectedItem()).getRoute().split(", ");
+                for (int i = 0; i < pokeRoutes.length; i++) {
+                    routeLookup.get(pokeRoutes[i]).remove(pokeLookup.get(pokeComboBox.getSelectionModel().getSelectedItem()).getName());
+                }
+                actionHelper.removeUnusedRoutes();
+                pokedex.removePoke(pokeLookup.get(pokeComboBox.getSelectionModel().getSelectedItem()));
+                pokeLookup.remove(pokeComboBox.getSelectionModel().getSelectedItem());
+                pokedex.exportPokemon();
+                pokeList.remove(pokeComboBox.getSelectionModel().getSelectedItem());
+                pokeComboBox.getSelectionModel().clearSelection();
                 doubleCheck.close();
+                pokeTemp = "";
             });
             no.setText("No");
             no.setOnAction(action -> {
@@ -443,6 +441,7 @@ public class app extends Application{
 
         pokeComboBox.setOnAction(event -> {
             if (pokeComboBox.getSelectionModel().getSelectedItem() != null) {
+                pokeTemp = pokeComboBox.getSelectionModel().getSelectedItem();
                 displayImage(scene, pokeComboBox.getSelectionModel().getSelectedItem());
                 setPokeText(pokeComboBox.getSelectionModel().getSelectedItem());
             } else {
@@ -453,19 +452,16 @@ public class app extends Application{
         });
 
         routeComboBox.setOnAction(event -> {
+            if (routeComboBox.getSelectionModel().getSelectedItem() != null) {
+                routeTemp = routeComboBox.getSelectionModel().getSelectedItem();
+            }
             try {
                 setRouteText(routeComboBox.getSelectionModel().getSelectedItem());
             } catch (NullPointerException e) {
                 e.printStackTrace();
-                setRouteText("");
-                routeComboBox.getSelectionModel().clearSelection();
             }
         });
-
-
-
     }
-
 
     private class ActionHelper {
 
@@ -485,26 +481,22 @@ public class app extends Application{
                         routeLookup.get(pokeRoutes[i]).add(newPoke.getName());
                     }
                 }
+                Collections.sort(filteredList2.getSource());
                 pokedex.exportPokemon();
-                ArrayList<String> rList = new ArrayList<>(routeLookup.keySet());
-                updateRoutes(FXCollections.observableList(rList));
+                pokeTemp = nameField.getText();
                 return 0;
             } else {
                 return 1;
             }
         }
 
-        private void updateRoutes(ObservableList<String> routeList) {
+        private void removeUnusedRoutes() {
 
             for (String route:routeLookup.keySet()) {
                 if (routeLookup.get(route).size() == 0) {
                     routeList.remove(route);
                 }
             }
-            Collections.sort(routeList);
-            filteredList2 = new FilteredList<>(routeList, selectedRoute -> !(selectedRoute.equals("None")
-                    || selectedRoute.replaceAll("\\s+", "").equals("")));
-            routeComboBox.setItems(filteredList2);
         }
 
         private void edit(String editPoke, String newName, String route, String type, String guesstype, String weakness,
@@ -519,9 +511,7 @@ public class app extends Application{
                     chosenPoke = 10000;
                 }
             }
-            if (chosenPoke == 10000) {
-                System.out.println(editPoke + " is not in the Pokedex!");
-            } else {
+            if (!(chosenPoke == 10000)) {
                 Pokemon poke = pokeLookup.get(editPoke);
                 poke.setName(newName);
                 poke.setId(IdPatcher.getId(newName));
@@ -548,11 +538,13 @@ public class app extends Application{
                         routeLookup.get(pokeRoutes[i]).add(poke.getName());
                     }
                 }
-
+                removeUnusedRoutes();
+                Collections.sort(filteredList2.getSource());
+                if (!routeList.contains(routeTemp)) {
+                    routeComboBox.getSelectionModel().clearSelection();
+                }
             }
             pokedex.exportPokemon();
-            ArrayList<String> rList = new ArrayList<>(routeLookup.keySet());
-            updateRoutes(FXCollections.observableList(rList));
         }
 
         private void addToRoute(String route, String poke) {
@@ -560,6 +552,15 @@ public class app extends Application{
                 pokeLookup.get(poke).setRoute(route);
             } else {
                 pokeLookup.get(poke).setRoute(pokeLookup.get(poke).getRoute() + ", " + route);
+            }
+            String[] pokeRoutes = pokeLookup.get(poke).getRoute().split(", ");
+            for (int i = 0; i < pokeRoutes.length; i++) {
+                if (!routeLookup.containsKey(pokeRoutes[i])) {
+                    routeLookup.put(pokeRoutes[i], new ArrayList<>());
+                }
+                if (!routeLookup.get(pokeRoutes[i]).contains(poke)) {
+                    routeLookup.get(pokeRoutes[i]).add(poke);
+                }
             }
             pokedex.exportPokemon();
         }
@@ -583,7 +584,6 @@ public class app extends Application{
     }
 
     private void setPokeText(String poke) {
-
         img.setFitHeight(scene.getWidth() * DEFAULT_IMAGE_SCALE);
         img.setFitWidth(scene.getWidth() * DEFAULT_IMAGE_SCALE);
         img.setX(scene.getWidth()-img.getFitWidth());
@@ -668,12 +668,8 @@ public class app extends Application{
             pokeImText.setFont(Font.font( "Serif", FontWeight.EXTRA_BOLD, DEFAULT_FONT_SIZE));
             pokeIm.getChildren().addAll(pokeImTitle, pokeImText);
             pokeInfo.getChildren().addAll(pokeRoute, pokeType, pokeGuess, pokeWeak, pokeRes, pokeIm);
-
-
         }
-
         pokeTextArea.getChildren().addAll(new VBox(DEFAULT_TITLE_SPACER, pokeTitleArea, pokeInfo));
-
     }
 
     private void setRouteText(String rout) {
@@ -681,7 +677,6 @@ public class app extends Application{
         routeTextArea.getChildren().remove(0, routeTextArea.getChildren().size());
         routeTitleArea.getChildren().remove(0, routeTitleArea.getChildren().size());
         final String route = capitalizeWord(rout);
-
         if (!route.equals("None")) {
             routeTitleText.setFont(Font.font("Serif", FontWeight.EXTRA_BOLD, DEFAULT_TITLE_SIZE));
             routeTitleText.setText(route);
@@ -698,11 +693,10 @@ public class app extends Application{
                     final String poke = capitalize(field.getText());
                     if (routeLookup.get(route).contains(poke)) {
                         prompt.close();
-                    }
-                    if (pokeLookup.containsKey(poke)) {
+                    } else if (pokeLookup.containsKey(poke)) {
                         actionHelper.addToRoute(route, poke);
-                        setRouteText(route);
                         prompt.close();
+                        setRouteText(route);
                     } else {
                         prompt.close();
                         Stage dbblCheck = new Stage();
@@ -715,6 +709,8 @@ public class app extends Application{
                             dbblCheck.close();
                             nameField.setText(poke);
                             routeField.setText(route);
+                            addingToRoute = true;
+                            tabPane.getSelectionModel().select(0);
                             addPokeBttn.fire();
                         });
                         Button n = new Button("No");
