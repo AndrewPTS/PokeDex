@@ -10,14 +10,4 @@
         <type>All</type>
         <weakness>Nothing</weakness>
     </pokemon>
-    <pokemon>
-        <guesstype></guesstype>
-        <id>6</id>
-        <name>Charizard</name>
-        <negated></negated>
-        <resistant></resistant>
-        <route>2</route>
-        <type></type>
-        <weakness></weakness>
-    </pokemon>
 </pokedex>
